@@ -12,4 +12,4 @@ User can authorize through Yandex.
 To start Docker from main directory:
 
 ```sh
-$ docker compose up --build
+$ docker compose -f docker_compose_dev.yaml --env-file .env.dev.pg up -d
