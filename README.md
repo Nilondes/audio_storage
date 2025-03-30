@@ -61,6 +61,8 @@ YANDEX_CLIENT_SECRET=<your_YANDEX_CLIENT_SECRET>
 
 wich can be obtained on https://oauth.yandex.ru/client/new
 
+The callback endpoint for dev - http://localhost:8000/auth/yandex/callback
+
 To install all dependencies:
 
 ```sh
