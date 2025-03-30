@@ -8,9 +8,10 @@ from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Form
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from api.v1.handlers import post_new_file
-from api.v1.models import AddFile
+from api.v1.handlers import get_all_user_files, get_user_by_email, post_new_file
+from api.v1.models import AddFile, File as FileModel
 from db.connectors import get_db_session, get_current_user_uuid
+
 
 router = APIRouter()
 
@@ -73,3 +74,21 @@ async def add_file(file_name: str = Form(...),
             status_code=HTTPStatus.INTERNAL_SERVER_ERROR,
             detail=f"File upload failed: {str(e)}"
         )
+
+
+@router.get("/{email}", response_model=List[FileModel])
+async def get_user_files(email: str,
+                    session: AsyncSession = Depends(get_db_session)):
+    user = await get_user_by_email(session, email=email)
+
+    if not user:
+        raise HTTPException(status_code=HTTPStatus.NOT_FOUND,
+                            detail="No user found")
+
+    files = await get_all_user_files(session, user_uuid=user.id)
+
+    if not files:
+        raise HTTPException(status_code=HTTPStatus.NOT_FOUND,
+                            detail="No files found")
+
+    return files

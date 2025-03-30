@@ -1,18 +1,22 @@
 from http import HTTPStatus
 from typing import List
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Request
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from api.v1.handlers import get_all_users, get_user_by_email, post_new_user
-from api.v1.models import CreateUser, User
+from api.v1.handlers import get_all_users, get_user_by_email, post_new_user, update_user_data
+from api.v1.models import CreateUser, User, UpdateUser
 from db.connectors import get_db_session
 
 router = APIRouter()
 
+
 @router.get("/users", response_model=List[User])
-async def get_users(session: AsyncSession = Depends(get_db_session)):
+async def get_users(request: Request, session: AsyncSession = Depends(get_db_session)):
+    if not request.session.get("is_superuser"):
+        raise HTTPException(status_code=403, detail="Forbidden")
+
     users = await get_all_users(session)
 
     if not users:
@@ -23,8 +27,10 @@ async def get_users(session: AsyncSession = Depends(get_db_session)):
 
 
 @router.get("/users/{email}", response_model=User)
-async def get_user(email: str,
+async def get_user(request: Request, email: str,
                    session: AsyncSession = Depends(get_db_session)):
+    if not request.session.get("is_superuser"):
+        raise HTTPException(status_code=403, detail="Forbidden")
     user = await get_user_by_email(session, email=email)
 
     if not user:
@@ -35,8 +41,10 @@ async def get_user(email: str,
 
 
 @router.post("/users", response_model=User)
-async def add_user(user: CreateUser,
+async def add_user(request: Request, user: CreateUser,
                    session: AsyncSession = Depends(get_db_session)):
+    if not request.session.get("is_superuser"):
+        raise HTTPException(status_code=403, detail="Forbidden")
     success = await post_new_user(session, user=user)
 
     if not success:
@@ -46,6 +54,19 @@ async def add_user(user: CreateUser,
     return user
 
 
-@router.delete("/users/{email}", response_model=User)
-async def del_user():
-    return None
+@router.patch("/users/{email}", response_model=User)
+async def update_user(
+    request: Request,
+    email: str,
+    user_data: UpdateUser,
+    session: AsyncSession = Depends(get_db_session),
+):
+    if not request.session.get("is_superuser"):
+        raise HTTPException(status_code=403, detail="Forbidden")
+    updated_user = await update_user_data(session, email, user_data)
+    if not updated_user:
+        raise HTTPException(
+            status_code=HTTPStatus.NOT_FOUND,
+            detail="User not found"
+        )
+    return updated_user

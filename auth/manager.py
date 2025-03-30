@@ -63,6 +63,7 @@ async def auth_callback(request: Request, code: str = None, session: AsyncSessio
             await post_new_user(session, user=user)
 
         request.session["user_uuid"] = str(user.id)
+        request.session["is_superuser"] = user.is_superuser
 
         return RedirectResponse(url="/pages/index")
 

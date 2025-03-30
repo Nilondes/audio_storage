@@ -38,6 +38,7 @@ app.include_router(frontend_router)
 
 app.include_router(
     files_router,
+    prefix="/files",
     tags=["files"]
 )
 
