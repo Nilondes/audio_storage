@@ -21,3 +21,4 @@ wheels/
 .installed.cfg
 *.ipynb_checkpoints!/.env.dev.ya
 /.env.dev.ya
+/uploads/
