@@ -62,7 +62,7 @@ async def auth_callback(request: Request, code: str = None, session: AsyncSessio
             user = CreateUser(name=user_data["login"], email=user_data["emails"][0])
             await post_new_user(session, user=user)
 
-        if not user.is_active:
+        elif not user.is_active:
             raise HTTPException(status_code=403, detail="User is not active")
 
         request.session["user_uuid"] = str(user.id)
