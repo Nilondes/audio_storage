@@ -1,3 +1,7 @@
+from uuid import UUID
+
+from fastapi import Request, HTTPException
+
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
 from sqlalchemy.orm import sessionmaker
 
@@ -17,3 +21,15 @@ async def get_db_session() -> AsyncSession:
         yield session
     finally:
         await session.close()
+
+
+async def get_current_user_uuid(
+        request: Request
+) -> UUID:
+    user_uuid = request.session.get("user_uuid")
+    if not user_uuid:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    try:
+        return UUID(user_uuid)
+    except ValueError:
+        raise HTTPException(status_code=400, detail="Invalid user UUID")

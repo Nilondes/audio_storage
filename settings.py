@@ -11,13 +11,6 @@ class ConnectorSettings(BaseSettings):
     model_config = SettingsConfigDict(env_file=".env.dev.pg", env_prefix="pg_")
 
 
-class JWTSettings(BaseSettings):
-    secret: SecretStr
-    reset: SecretStr
-
-    model_config = SettingsConfigDict(env_file=".env.dev.jwt", env_prefix="jwt_")
-
-
 class YandexSettings(BaseSettings):
     client_id: str
     client_secret: str
@@ -26,5 +19,4 @@ class YandexSettings(BaseSettings):
 
 
 settings = ConnectorSettings()
-secret = JWTSettings()
 yandex = YandexSettings()

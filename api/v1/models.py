@@ -10,3 +10,9 @@ class User(BaseModel):
 class CreateUser(BaseModel):
     name: str
     email: str
+
+
+class AddFile(BaseModel):
+    filename: str
+    path: str
+    user_id: UUID4

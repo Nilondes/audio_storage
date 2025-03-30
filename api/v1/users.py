@@ -5,7 +5,7 @@ from fastapi import APIRouter, Depends, HTTPException
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from api.v1.handlers import get_all_users, get_user_by_name, post_new_user
+from api.v1.handlers import get_all_users, get_user_by_email, post_new_user
 from api.v1.models import CreateUser, User
 from db.connectors import get_db_session
 
@@ -22,10 +22,10 @@ async def get_users(session: AsyncSession = Depends(get_db_session)):
     return users
 
 
-@router.get("/users/{name}", response_model=User)
-async def get_user(name: str,
+@router.get("/users/{email}", response_model=User)
+async def get_user(email: str,
                    session: AsyncSession = Depends(get_db_session)):
-    user = await get_user_by_name(session, name=name)
+    user = await get_user_by_email(session, email=email)
 
     if not user:
         raise HTTPException(status_code=HTTPStatus.NOT_FOUND,
@@ -46,6 +46,6 @@ async def add_user(user: CreateUser,
     return user
 
 
-@router.delete("/users/{name}", response_model=User)
+@router.delete("/users/{email}", response_model=User)
 async def del_user():
     return None
