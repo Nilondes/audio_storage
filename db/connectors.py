@@ -1,14 +1,12 @@
 from uuid import UUID
 
 from fastapi import Request, HTTPException, Depends
-from sqlalchemy import Boolean
 
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
 from sqlalchemy.orm import sessionmaker
 
 from settings import settings as SETTINGS
 
-from db.models import User
 
 connection_string = (f"postgresql+asyncpg://{SETTINGS.user}"
                      f":{SETTINGS.password.get_secret_value()}"
