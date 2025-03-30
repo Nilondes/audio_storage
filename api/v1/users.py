@@ -12,7 +12,7 @@ from db.connectors import get_db_session
 router = APIRouter()
 
 
-@router.get("/users", response_model=List[User])
+@router.get("", response_model=List[User])
 async def get_users(request: Request, session: AsyncSession = Depends(get_db_session)):
     if not request.session.get("is_superuser"):
         raise HTTPException(status_code=403, detail="Forbidden")
@@ -26,7 +26,7 @@ async def get_users(request: Request, session: AsyncSession = Depends(get_db_ses
     return users
 
 
-@router.get("/users/{email}", response_model=User)
+@router.get("/{email}", response_model=User)
 async def get_user(request: Request, email: str,
                    session: AsyncSession = Depends(get_db_session)):
     if not request.session.get("is_superuser"):
@@ -40,7 +40,7 @@ async def get_user(request: Request, email: str,
     return user
 
 
-@router.post("/users", response_model=User)
+@router.post("", response_model=User)
 async def add_user(request: Request, user: CreateUser,
                    session: AsyncSession = Depends(get_db_session)):
     if not request.session.get("is_superuser"):
@@ -54,7 +54,7 @@ async def add_user(request: Request, user: CreateUser,
     return user
 
 
-@router.patch("/users/{email}", response_model=User)
+@router.patch("/{email}", response_model=User)
 async def update_user(
     request: Request,
     email: str,
